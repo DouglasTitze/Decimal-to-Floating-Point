@@ -1,0 +1,137 @@
+import math
+
+# Converts num to binary and appends it to the input list
+def Calc_Binary(list, r, num):
+    n = num
+
+    # Algorithm for numbers greater than or equal to one
+    if n >= 1:
+        for i in range(r):
+            n = n / 2
+            if n != math.floor(n):
+                n = math.floor(n)
+                list.insert(0, 1)
+
+            else:
+                list.insert(0, 0)
+
+    # Algorithm for numbers less than one
+    elif n != 0:
+        for i in range(r):
+            n = n * 2
+            if 1 <= n < 2:
+                n -= 1
+                temp.append(1)
+
+            else:
+                temp.append(0)
+
+
+
+# Calculates the sign bit
+def Calc_Sign(num):
+    if num < 0:
+        return [1]
+    else:
+        return [0]
+
+# Calculates the number of bits in the exponent
+def Calc_Num_Expo(num):
+
+    if num == 8:
+        return 3
+
+    elif num == 16:
+        return 5
+
+    elif num == 32:
+        return 8
+
+    else:
+        return 11
+
+# Had issues when the power was negative so I implemented this
+def Calc_Power(msd, deci):
+
+    if deci > msd:  # If the decimal is after the most significant digit use this formula
+        return deci - msd - 1
+
+    else:  # Else use this
+        return deci - msd
+
+# Removes decimal from list and reformats the list
+def Remove_Deci(list):
+    list.remove(".")  # Removes decimal
+
+    while not list[0]:  # Loop iterates through the list and pops everything until the most significant digit
+        list.pop(0)
+
+# Calculates the mantissa and adds it to the input list
+def Calc_Mantissa(man, temp, end):
+    start = 1  # Move most significant digit to the first digit after the decimal
+    man += temp[start: start + end]  # Range [Digit after decimal until max bits in mantissa]
+
+
+# Prints user input number
+def Print_Num(numb):
+    print(f"\n{numb} ≈", end=" ")
+
+
+# Prints the final result in list form (easier to read) and then in string form
+def Print_Binary(list):
+    n = ''.join(map(str, list))  # Formats list into a string
+    print(f"{list} = {n}")
+    return n
+
+
+# Ask user for input
+num = float(input("Please input the number you would like converted.\n"))
+bits = int(input("Please choose the number of bits you would like the binary conversion to be in: 8,16,32 or 64.\n"))
+
+# Lists
+temp = ["."]
+mantis = []
+expo = []
+final = []
+sign = Calc_Sign(num)
+
+# Values
+num_expo = Calc_Num_Expo(bits)
+num_mantis = bits - num_expo - 1
+num_whole = math.floor(abs(num))
+num_deci = abs(num) - num_whole
+
+# Calculate the binary for the whole number and the decimal
+Calc_Binary(temp, bits, num_whole)
+Calc_Binary(temp, bits, num_deci)
+
+# Calculate values that are needed to calculate the binary of the exponent "block"
+msd = temp.index(1)  # Index of most significant digit.
+deci = temp.index(".")  # Index of decimal
+power = Calc_Power(msd, deci)
+k = 2 ** (num_expo - 1) - 1  # Number represents ?????
+Calc_Binary(expo, num_expo, power + k)
+
+# Calculate mantissa
+Remove_Deci(temp)
+Calc_Mantissa(mantis, temp, num_mantis)
+
+# Add all the lists final output
+final += sign
+final += expo
+final += mantis
+
+# Format the final output
+Print_Num(num)
+Answer = Print_Binary(final)
+
+
+# Validation of code VS online converters
+Online = float(input())
+Answer = float(Answer)
+
+if Answer == Online:
+    print("Correct")
+
+else:
+    print(f"Incorrect - {Answer - Online}")  # Usually my code is off on the least significant digit when converting large numbers
