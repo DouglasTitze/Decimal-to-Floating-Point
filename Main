@@ -47,8 +47,11 @@ def Calc_Num_Expo(num):
     elif num == 32:
         return 8
 
-    else:
+    elif num == 64:
         return 11
+    
+    else:
+        exit()
 
 # Had issues when the power was negative so I implemented this
 def Calc_Power(msd, deci):
